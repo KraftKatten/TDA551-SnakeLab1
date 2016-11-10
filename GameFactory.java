@@ -11,8 +11,9 @@ public class GameFactory implements IGameFactory {
 	 */
 	@Override
 	public String[] getGameNames() {
-		return new String[] { "Gold" };
+		return new String[] { "Gold", "Snake" };
 	}
+
 
 	/**
 	 * Returns a new model object for the game corresponding to its Name.
@@ -23,11 +24,17 @@ public class GameFactory implements IGameFactory {
 	 *             if no such game
 	 */
 	@Override
-	public GameModel createGame(final String gameName) {
+	public GameModel createGame(final String gameName ) {
 		if (gameName.equals("Gold")) {
 			return new GoldModel();
+		}else if (gameName.equals("Snake")){
+			return new SnakeModel();
 		}
 
-		throw new IllegalArgumentException("No such game: " + gameName);
+
+			throw new IllegalArgumentException("No such game: " + gameName);
+		}
+
+
 	}
-}
+
