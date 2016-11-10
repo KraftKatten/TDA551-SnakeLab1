@@ -1,26 +1,31 @@
 package lab1;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayDeque;
 
 /**
  * Created 2016-11-10.
- *
- *
  */
 public class SnakeModel extends GameModel {
 
     private ArrayDeque<Position> deque;
-    private Position cherryPosition;
+    private Position cherryPos;
+    private Position snakeHeadPos;
+    private static final GameTile bodyTile = new RoundTile(Color.GREEN, Color.BLACK);
+    private static final GameTile headTile = new RoundTile(Color.LIGHT_GRAY, Color.BLACK);
+    private int score = 0;
 
-    /** The direction of the collector. */
+
+    /**
+     * The direction of the collector.
+     */
     private Directions direction = Directions.NORTH;
 
-    public SnakeModel(){
+    public SnakeModel() {
         deque = new ArrayDeque<>(10);
-        deque.addFirst(new Position(getGameboardSize().width/2, getGameboardSize().height/2));
-
-        //lägg till cherry
+        //läggb till huvve
+        moveCherry();
     }
 
     public enum Directions {
@@ -71,11 +76,29 @@ public class SnakeModel extends GameModel {
         }
     }
 
-    private void moveSnake(){
+    private Position getNextSnakePos() {
+        return new Position(
+                this.deque.peekFirst().getX() + this.direction.getXDelta(),
+                this.deque.peekFirst().getY() + this.direction.getYDelta());
+    }
+
+    private void moveSnake() throws GameOverException {
+
+        deque.addFirst(snakeHeadPos);
+        setGameboardState(snakeHeadPos, bodyTile);
+
+        snakeHeadPos = getNextSnakePos();
+
+        if (deque.peekFirst().getX() >= getGameboardSize().width || deque.peekFirst().getY() >= getGameboardSize().height ||
+                getGameboardState(snakeHeadPos).equals(bodyTile)) {
+            throw new GameOverException(score);
+        }
+
+        setGameboardState(snakeHeadPos, headTile);
 
     }
 
-    private void moveCherry(){
+    private void moveCherry() {
 
     }
 
@@ -85,23 +108,15 @@ public class SnakeModel extends GameModel {
 
         moveSnake();
 
-        if (deque.peekFirst().equals(cherryPosition)){
+        if (deque.peekFirst().equals(cherryPos)) {
             moveCherry();
             //score++;
-        }
-        else{
+        } else {
             //setGameboardState(deque.peekLast(), BLANK_TILE);
             deque.removeLast();
 
         }
 
-        // if utanför throw exception
-        if (deque.peekFirst().getX() >= getGameboardSize().width || deque.peekFirst().getY() >= getGameboardSize().height){
-            throw new GameOverException(10); // lägg till score
-        }
-
-
 
     }
 }
-
