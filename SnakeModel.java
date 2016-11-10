@@ -12,8 +12,10 @@ public class SnakeModel extends GameModel {
     private ArrayDeque<Position> deque;
     private Position cherryPos;
     private Position snakeHeadPos;
-    private static final GameTile bodyTile = new RoundTile(Color.GREEN, Color.BLACK);
-    private static final GameTile headTile = new RoundTile(Color.LIGHT_GRAY, Color.BLACK);
+    private static final GameTile bodyTile = new SquareTile(Color.BLACK, Color.GREEN);
+    private static final GameTile headTile = new SquareTile(Color.BLACK);
+    private static final GameTile blankTile = new GameTile();
+    private static final GameTile CHERRY_TILE=new RoundTile(Color.BLACK,Color.RED);
     private int score = 0;
 
 
@@ -23,9 +25,20 @@ public class SnakeModel extends GameModel {
     private Directions direction = Directions.NORTH;
 
     public SnakeModel() {
+        // Blank out the whole gameboard
+        for (int i = 0; i < getGameboardSize().width; i++) {
+            for (int j = 0; j < getGameboardSize().height; j++) {
+                setGameboardState(i, j, blankTile);
+            }
+        }
+
         deque = new ArrayDeque<>(10);
-        //läggb till huvve
-        moveCherry();
+        snakeHeadPos = new Position(getGameboardSize().width/2, getGameboardSize().height/2);
+        setGameboardState(snakeHeadPos, headTile);
+
+        try {
+            moveCherry();
+        } catch (GameOverException e){}
     }
 
     public enum Directions {
@@ -57,29 +70,37 @@ public class SnakeModel extends GameModel {
      * according to the user's keypress.
      */
     private void updateDirection(final int key) {
+
+        Directions newDirection = direction;
+
         switch (key) {
             case KeyEvent.VK_LEFT:
-                this.direction = Directions.WEST;
+                newDirection = Directions.WEST;
                 break;
             case KeyEvent.VK_UP:
-                this.direction = Directions.NORTH;
+                newDirection = Directions.NORTH;
                 break;
             case KeyEvent.VK_RIGHT:
-                this.direction = Directions.EAST;
+                newDirection = Directions.EAST;
                 break;
             case KeyEvent.VK_DOWN:
-                this.direction = Directions.SOUTH;
+                newDirection = Directions.SOUTH;
                 break;
             default:
                 // Don't change direction if another key is pressed
                 break;
         }
+
+        if (deque.isEmpty() || (direction.xDelta + newDirection.xDelta != 0 && direction.yDelta + newDirection.yDelta != 0)){
+            direction = newDirection;
+        }
+
     }
 
     private Position getNextSnakePos() {
         return new Position(
-                this.deque.peekFirst().getX() + this.direction.getXDelta(),
-                this.deque.peekFirst().getY() + this.direction.getYDelta());
+                this.snakeHeadPos.getX() + this.direction.getXDelta(),
+                this.snakeHeadPos.getY() + this.direction.getYDelta());
     }
 
     private void moveSnake() throws GameOverException {
@@ -89,8 +110,9 @@ public class SnakeModel extends GameModel {
 
         snakeHeadPos = getNextSnakePos();
 
-        if (deque.peekFirst().getX() >= getGameboardSize().width || deque.peekFirst().getY() >= getGameboardSize().height ||
-                getGameboardState(snakeHeadPos).equals(bodyTile)) {
+
+        if ( snakeHeadPos.getX() >= getGameboardSize().width || snakeHeadPos.getY() >= getGameboardSize().height ||
+                snakeHeadPos.getX() < 0 || snakeHeadPos.getY() < 0 || getGameboardState(snakeHeadPos).equals(bodyTile)) {
             throw new GameOverException(score);
         }
 
@@ -98,7 +120,38 @@ public class SnakeModel extends GameModel {
 
     }
 
-    private void moveCherry() {
+    private boolean isPositionEmpty(final Position pos) {
+        return (getGameboardState(pos) == blankTile);
+    }
+
+
+    private void moveCherry() throws GameOverException{
+        Position tmp;
+        boolean hasEmpty=false;
+        Dimension size = getGameboardSize();
+
+        // Loop until a blank position is found and ...
+        for (int i =0;i<size.width && !hasEmpty;i++){
+            for (int j=0;j<size.height  && !hasEmpty ;j++){
+                tmp =new Position(i,j);
+                if (isPositionEmpty(tmp)){
+                    hasEmpty = true  ;
+                }
+            }
+        }
+
+        if (!hasEmpty){
+            throw new GameOverException(score + 20);
+        }
+
+        do {
+            tmp = new Position((int) (Math.random() * size.width),
+                    (int) (Math.random() * size.height));
+        } while (!isPositionEmpty(tmp));
+
+        // ... add a new coin to the empty tile.
+        setGameboardState(tmp, CHERRY_TILE);
+        cherryPos = tmp;
 
     }
 
@@ -108,15 +161,13 @@ public class SnakeModel extends GameModel {
 
         moveSnake();
 
-        if (deque.peekFirst().equals(cherryPos)) {
+        if (snakeHeadPos.equals(cherryPos)) {
             moveCherry();
-            //score++;
+            score++;
         } else {
-            //setGameboardState(deque.peekLast(), BLANK_TILE);
+            setGameboardState(deque.peekLast(), blankTile);
             deque.removeLast();
 
         }
-
-
     }
 }

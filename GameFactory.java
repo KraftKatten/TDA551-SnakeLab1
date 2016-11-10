@@ -14,10 +14,9 @@ public class GameFactory implements IGameFactory {
 		return new String[] { "Gold", "Snake" };
 	}
 
-
 	/**
 	 * Returns a new model object for the game corresponding to its Name.
-	 * 
+	 *
 	 * @param gameName
 	 *            The name of the game as given by getGameNames()
 	 * @throws IllegalArgumentException
@@ -27,14 +26,13 @@ public class GameFactory implements IGameFactory {
 	public GameModel createGame(final String gameName ) {
 		if (gameName.equals("Gold")) {
 			return new GoldModel();
-		}else if (gameName.equals("Snake")){
+		}
+		if (gameName.equals("Snake")){
 			return new SnakeModel();
 		}
 
-
-			throw new IllegalArgumentException("No such game: " + gameName);
-		}
-
-
+		throw new IllegalArgumentException("No such game: " + gameName);
 	}
 
+
+}
