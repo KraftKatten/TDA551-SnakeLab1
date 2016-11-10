@@ -5,6 +5,7 @@ Katten:
 *pillar lite i update
 *kollar på deque
 *updatedirection
+*javadoc
 
 Hussein:
 *kollar på deque
