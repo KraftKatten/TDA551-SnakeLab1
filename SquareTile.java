@@ -8,7 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 
 /**
- * A round tile manages painting of a circle
+ * A square tile manages painting of a square
  * in a specified area of the screen.
  *
  * Whenever the object should paint itself,
@@ -17,41 +17,41 @@ import java.awt.Stroke;
  */
 public class SquareTile extends GameTile {
 
-    /** The color of the circle */
+    /** The color of the square */
     private final Color strokeColor;
     private final Color fillColor;
     private final Stroke stroke;
     private final double scale;
 
     /**
-     * Creates a circular game tile.
+     * Creates a square game tile.
      *
      * @param fillColor
-     *            the color of the interior of the circle.
+     *            the color of the interior of the square.
      */
     public SquareTile(final Color fillColor) {
         this(fillColor, fillColor);
     }
 
     /**
-     * Creates a circular game tile with a stroke around it.
+     * Creates a square game tile with a stroke around it.
      *
      * @param strokeColor
-     *            the color of the stroke around the circle.
+     *            the color of the stroke around the square.
      * @param fillColor
-     *            the color of the interior of the circle.
+     *            the color of the interior of the square.
      */
     public SquareTile(final Color strokeColor, final Color fillColor) {
         this(strokeColor, fillColor, 1.0);
     }
 
     /**
-     * Creates a circular game tile with a stroke around it.
+     * Creates a square game tile with a stroke around it.
      *
      * @param strokeColor
-     *            the color of the stroke around the circle.
+     *            the color of the stroke around the square.
      * @param fillColor
-     *            the color of the interior of the circle.
+     *            the color of the interior of the square.
      * @param thickness
      *            the thickness of the stroke.
      */
@@ -64,13 +64,13 @@ public class SquareTile extends GameTile {
      * Creates a circular game tile with a stroke around it.
      *
      * @param strokeColor
-     *            the color of the stroke around the circle.
+     *            the color of the stroke around the square.
      * @param fillColor
-     *            the color of the interior of the circle.
+     *            the color of the interior of the square.
      * @param thickness
      *            the thickness of the stroke.
      * @param scale
-     *            size of the circle relative to the tile size.
+     *            size of the sqaure relative to the tile size.
      */
     public SquareTile(final Color strokeColor, final Color fillColor,
                      final double thickness, final double scale) {
