@@ -15,7 +15,7 @@ public class SnakeModel extends GameModel {
     private static final GameTile bodyTile = new SquareTile(Color.BLACK, Color.GREEN);
     private static final GameTile headTile = new SquareTile(Color.BLACK);
     private static final GameTile blankTile = new GameTile();
-    private static final GameTile CHERRY_TILE=new RoundTile(Color.BLACK,Color.RED);
+    private static final GameTile CHERRY_TILE = new RoundTile(Color.BLACK, Color.RED);
     private int score = 0;
 
 
@@ -33,12 +33,13 @@ public class SnakeModel extends GameModel {
         }
 
         deque = new ArrayDeque<>(10);
-        snakeHeadPos = new Position(getGameboardSize().width/2, getGameboardSize().height/2);
+        snakeHeadPos = new Position(getGameboardSize().width / 2, getGameboardSize().height / 2);
         setGameboardState(snakeHeadPos, headTile);
 
         try {
             moveCherry();
-        } catch (GameOverException e){}
+        } catch (GameOverException e) {
+        }
     }
 
     public enum Directions {
@@ -91,7 +92,7 @@ public class SnakeModel extends GameModel {
                 break;
         }
 
-        if (deque.isEmpty() || (direction.xDelta + newDirection.xDelta != 0 && direction.yDelta + newDirection.yDelta != 0)){
+        if (deque.isEmpty() || (direction.xDelta + newDirection.xDelta != 0 && direction.yDelta + newDirection.yDelta != 0)) {
             direction = newDirection;
         }
 
@@ -103,21 +104,15 @@ public class SnakeModel extends GameModel {
                 this.snakeHeadPos.getY() + this.direction.getYDelta());
     }
 
-    /**
-     * Get Next Positon For The Snake.
-     * @throws GameOverException
-     */
-
     private void moveSnake() throws GameOverException {
-         //  added the the SnakeHead position.
-        deque.addFirst(snakeHeadPos);
 
+        deque.addFirst(snakeHeadPos);
         setGameboardState(snakeHeadPos, bodyTile);
 
         snakeHeadPos = getNextSnakePos();
 
-        // IT will Checke  The Conditions Of If We Are Out Of The Bord Or The Snake Crashing With It Self Then Throw Exception To End The Game.
-        if ( snakeHeadPos.getX() >= getGameboardSize().width || snakeHeadPos.getY() >= getGameboardSize().height ||
+
+        if (snakeHeadPos.getX() >= getGameboardSize().width || snakeHeadPos.getY() >= getGameboardSize().height ||
                 snakeHeadPos.getX() < 0 || snakeHeadPos.getY() < 0 || getGameboardState(snakeHeadPos).equals(bodyTile)) {
             throw new GameOverException(score);
         }
@@ -130,32 +125,34 @@ public class SnakeModel extends GameModel {
         return (getGameboardState(pos) == blankTile);
     }
 
-
-    private void moveCherry() throws GameOverException{
+    // Places a cherry tile on a random empty position
+    private void moveCherry() throws GameOverException {
         Position tmp;
-        boolean hasEmpty=false;
+        boolean hasEmpty = false;
         Dimension size = getGameboardSize();
 
-        // Loop until a blank position is found and ...
-        for (int i =0;i<size.width && !hasEmpty;i++){
-            for (int j=0;j<size.height  && !hasEmpty ;j++){
-                tmp =new Position(i,j);
-                if (isPositionEmpty(tmp)){
-                    hasEmpty = true  ;
+        // Loops to see if there are any vacant positions on the board
+        for (int i = 0; i < size.width && !hasEmpty; i++) {
+            for (int j = 0; j < size.height && !hasEmpty; j++) {
+                tmp = new Position(i, j);
+                if (isPositionEmpty(tmp)) {
+                    hasEmpty = true;
                 }
             }
         }
 
-        if (!hasEmpty){
+        // Checks if there are no empty positions left on the board (i.e. checks if the player has won or not)
+        if (!hasEmpty) {
             throw new GameOverException(score + 20);
         }
 
+        // An empty position is randomized and stored
         do {
             tmp = new Position((int) (Math.random() * size.width),
                     (int) (Math.random() * size.height));
         } while (!isPositionEmpty(tmp));
 
-        // ... add a new coin to the empty tile.
+        // Adds a new cherry to the empty tile
         setGameboardState(tmp, CHERRY_TILE);
         cherryPos = tmp;
 
