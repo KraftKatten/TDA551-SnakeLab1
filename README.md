@@ -2,15 +2,19 @@
 
 
 Katten:
-pillar lite i update
-kollar på deque
-updatedirection
+*pillar lite i update
+*kollar på deque
+*updatedirection
 
 Hussein:
-kollar på deque
-move cherry
-gamefactory
+*kollar på deque
+*move cherry
+*gamefactory
 
 Corre:
-move snake
-variabler, cherry (tile), snakehead, snakebody, empty
+*move snake
+*variabler
+*cherry (tile)
+*snakehead
+*snakebody
+*empty
