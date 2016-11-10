@@ -1,7 +1,8 @@
 package lab1;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayDeque;
+import java.util.*;
 
 /**
  * Created 2016-11-10.
@@ -12,6 +13,11 @@ public class SnakeModel extends GameModel {
 
     private ArrayDeque<Position> deque;
     private Position cherryPosition;
+    private static final GameTile BLANK_TILE = new GameTile();
+     private  static final GameTile CHERRY_TILE=new RoundTile(Color.RED,Color.black);
+    /** A list containing the positions of all cherry. */
+    private final java.util.List<Position> cherry = new ArrayList<Position>();
+
 
     /** The direction of the collector. */
     private Directions direction = Directions.NORTH;
@@ -75,9 +81,38 @@ public class SnakeModel extends GameModel {
 
     }
 
-    private void moveCherry(){
+    private void moveCherry() throws GameOverException{
+        Position tmp;
+        boolean hasEmpty=false;
+        Dimension size = getGameboardSize();
+
+        // Loop until a blank position is found and ...
+        for (int i =0;i<size.width && !hasEmpty;i++){
+            for (int j=0;j<size.height  && !hasEmpty ;j++){
+                tmp =new Position(i,j);
+                if (isPositionEmpty(tmp)){
+                    hasEmpty = true  ;
+                }
+            }
+        }
+
+        if (!hasEmpty){
+            throw new GameOverException(20);
+        }
+        do {
+            tmp = new Position((int) (Math.random() * size.width),
+                    (int) (Math.random() * size.height));
+        } while (!isPositionEmpty(tmp));
+
+        // ... add a new coin to the empty tile.
+        setGameboardState(tmp, CHERRY_TILE);
+        this.cherry.add(tmp);
 
     }
+    private boolean isPositionEmpty(final Position pos) {
+        return (getGameboardState(pos) == BLANK_TILE);
+    }
+
 
     @Override
     public void gameUpdate(int lastKey) throws GameOverException {
@@ -104,4 +139,3 @@ public class SnakeModel extends GameModel {
 
     }
 }
-
