@@ -11,6 +11,7 @@ import java.util.ArrayDeque;
 public class SnakeModel extends GameModel {
 
     private ArrayDeque<Position> deque;
+    private Position cherryPosition;
 
     /** The direction of the collector. */
     private Directions direction = Directions.NORTH;
@@ -18,6 +19,8 @@ public class SnakeModel extends GameModel {
     public SnakeModel(){
         deque = new ArrayDeque<>(10);
         deque.addFirst(new Position(getGameboardSize().width/2, getGameboardSize().height/2));
+
+        //lägg till cherry
     }
 
     public enum Directions {
@@ -82,10 +85,21 @@ public class SnakeModel extends GameModel {
 
         moveSnake();
 
-        //If ätit cherry, flytta cherry, lägg till score,
-        //Annars ta bort sista i deque
+        if (deque.peekFirst().equals(cherryPosition)){
+            moveCherry();
+            //score++;
+        }
+        else{
+            //setGameboardState(deque.peekLast(), BLANK_TILE);
+            deque.removeLast();
+
+        }
 
         // if utanför throw exception
+        if (deque.peekFirst().getX() >= getGameboardSize().width || deque.peekFirst().getY() >= getGameboardSize().height){
+            throw new GameOverException(10); // lägg till score
+        }
+
 
 
     }
