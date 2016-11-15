@@ -95,9 +95,9 @@ public class SnakeModel extends GameModel {
         snakeHeadPos = new Position(getGameboardSize().width/2, getGameboardSize().height/2);
         setGameboardState(snakeHeadPos, headTile);
 
-       for(int i=0 ; i< SNAKE_START_LENGTH;i++){
-           deque.addLast(snakeHeadPos);
-       }
+        for(int i=0 ; i< SNAKE_START_LENGTH;i++){
+            deque.addLast(snakeHeadPos);
+        }
         // Place a cherry
         try {
             moveCherry();
@@ -159,13 +159,19 @@ public class SnakeModel extends GameModel {
         snakeHeadPos = getNextSnakePos();
 
         // IT will Checke  The Conditions Of If We Are Out Of The Bord Or The Snake Crashing With It Self Then Throw Exception To End The Game.
-        if ( snakeHeadPos.getX() >= getGameboardSize().width || snakeHeadPos.getY() >= getGameboardSize().height ||
-                snakeHeadPos.getX() < 0 || snakeHeadPos.getY() < 0 || getGameboardState(snakeHeadPos).equals(bodyTile)) {
+        if (snakeHeadPos.getX() < 0 || snakeHeadPos.getY() < 0 || getGameboardState(snakeHeadPos).equals(bodyTile)) {
             throw new GameOverException(score);
         }
+        OutOfBounds();
 
         setGameboardState(snakeHeadPos, headTile);
 
+    }
+
+    private void OutOfBounds() throws GameOverException {
+        if(snakeHeadPos.getX() >= getGameboardSize().width || snakeHeadPos.getY() >= getGameboardSize().height){
+            throw new GameOverException(score);
+        }
     }
 
     /**
@@ -214,6 +220,7 @@ public class SnakeModel extends GameModel {
         cherryPos = tmp;
 
     }
+
 
     /**
      * This method is called repeatedly so that the
