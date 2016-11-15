@@ -32,6 +32,9 @@ public class SnakeModel extends GameModel {
             return this.yDelta;
         }
     }
+    private static final int CHERRY_Start_Amount = 3;
+    private static final int SNAKE_START_LENGTH = 4;
+
 
     /** The dynamic array containing the body of the snake */
     private ArrayDeque<Position> deque;
@@ -73,7 +76,11 @@ public class SnakeModel extends GameModel {
     /**
      * Create a new model for the snake game.
      */
+
+
     public SnakeModel() {
+
+
         // Blank out the whole game board
         for (int i = 0; i < getGameboardSize().width; i++) {
             for (int j = 0; j < getGameboardSize().height; j++) {
@@ -88,7 +95,9 @@ public class SnakeModel extends GameModel {
         snakeHeadPos = new Position(getGameboardSize().width/2, getGameboardSize().height/2);
         setGameboardState(snakeHeadPos, headTile);
 
-
+       for(int i=0 ; i< SNAKE_START_LENGTH;i++){
+           deque.addLast(snakeHeadPos);
+       }
         // Place a cherry
         try {
             moveCherry();
@@ -172,8 +181,8 @@ public class SnakeModel extends GameModel {
 
 
     /** Places a cherry tile on a random empty position
-    * @throws GameOverException
-    */
+     * @throws GameOverException
+     */
     private void moveCherry() throws GameOverException {
         Position tmp;
         boolean hasEmpty = false;
