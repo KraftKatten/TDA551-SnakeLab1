@@ -2,7 +2,7 @@ package lab1;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayDeque;
+import java.util.*;
 
 /**
  *  Initially places a snake head and a cherry. When a cherry is picked up, a new one appears and a snake forms after the snake head.
@@ -33,14 +33,14 @@ public class SnakeModel extends GameModel {
         }
     }
     private static final int CHERRY_Start_Amount = 3;
-    private static final int SNAKE_START_LENGTH = 4;
+    private static final int SNAKE_START_LENGTH = 6;
 
 
     /** The dynamic array containing the body of the snake */
     private ArrayDeque<Position> deque;
 
-    /** The position of the cherry*/
-    private Position cherryPos;
+    /** A list containing the positions of all coins. */
+    private final java.util.List<Position> cherries = new ArrayList<Position>();
 
     /** The position of the snake head*/
     private Position snakeHeadPos;
@@ -96,12 +96,21 @@ public class SnakeModel extends GameModel {
         setGameboardState(snakeHeadPos, headTile);
 
        for(int i=0 ; i< SNAKE_START_LENGTH;i++){
-           deque.addLast(snakeHeadPos);
+           deque.addLast(new Position(-1,-1));
        }
-        // Place a cherry
-        try {
-            moveCherry();
-        } catch (GameOverException e){}
+
+
+       try {
+           for (int i = 0; i < CHERRY_Start_Amount; i++) {
+               addCherry();
+
+           }
+       }catch (GameOverException e){
+
+       }
+
+
+
     }
 
     /**
@@ -158,15 +167,25 @@ public class SnakeModel extends GameModel {
 
         snakeHeadPos = getNextSnakePos();
 
-        // IT will Checke  The Conditions Of If We Are Out Of The Bord Or The Snake Crashing With It Self Then Throw Exception To End The Game.
-        if ( snakeHeadPos.getX() >= getGameboardSize().width || snakeHeadPos.getY() >= getGameboardSize().height ||
-                snakeHeadPos.getX() < 0 || snakeHeadPos.getY() < 0 || getGameboardState(snakeHeadPos).equals(bodyTile)) {
-            throw new GameOverException(score);
-        }
+        checkCollision();
+        outOfBounds();
 
         setGameboardState(snakeHeadPos, headTile);
 
     }
+
+    private void outOfBounds() throws GameOverException {
+        if(snakeHeadPos.getX() >= getGameboardSize().width || snakeHeadPos.getY() >= getGameboardSize().height || snakeHeadPos.getX() < 0 || snakeHeadPos.getY() < 0 ){
+            throw new GameOverException(score);
+        }
+    }
+
+    private void checkCollision() throws GameOverException{
+        if ( getGameboardState(snakeHeadPos).equals(bodyTile)) {
+            throw new GameOverException(score);
+        }
+    }
+
 
     /**
      * Return whether the specified position is empty.
@@ -180,14 +199,16 @@ public class SnakeModel extends GameModel {
     }
 
 
+/*
     /** Places a cherry tile on a random empty position
      * @throws GameOverException
-     */
+     *//*
     private void moveCherry() throws GameOverException {
         Position tmp;
         boolean hasEmpty = false;
         Dimension size = getGameboardSize();
 
+        /*
         // Loops to see if there are any vacant positions on the board
         for (int i = 0; i < size.width && !hasEmpty; i++) {
             for (int j = 0; j < size.height && !hasEmpty; j++) {
@@ -202,7 +223,8 @@ public class SnakeModel extends GameModel {
         if (!hasEmpty) {
             throw new GameOverException(score + 20);
         }
-
+        */
+/*
         // An empty position is randomized and stored
         do {
             tmp = new Position((int) (Math.random() * size.width),
@@ -214,7 +236,35 @@ public class SnakeModel extends GameModel {
         cherryPos = tmp;
 
     }
+    */
 
+        /**
+         * Insert another coin into the gameboard.
+         */
+    private void addCherry() throws GameOverException {
+        Position newCherryPos;
+        Dimension size = getGameboardSize();
+        checkWin();
+        // Loop until a blank position is found and ...
+        do {
+            newCherryPos = new Position((int) (Math.random() * size.width),
+                    (int) (Math.random() * size.height));
+        } while (!isPositionEmpty(newCherryPos));
+
+        // ... add a new coin to the empty tile.
+        setGameboardState(newCherryPos, CHERRY_TILE);
+        this.cherries.add(newCherryPos);
+    }
+
+    /**
+     * Check if victory has been achieved, i.e. checks if there are no empty positions on the board
+     * @throws GameOverException
+     */
+    public void checkWin() throws GameOverException{
+        if (getGameboardSize().getHeight() * getGameboardSize().getWidth() == deque.size() + 1){
+            throw new GameOverException(score + 20);
+        }
+    }
     /**
      * This method is called repeatedly so that the
      * game can update its state.
@@ -225,18 +275,33 @@ public class SnakeModel extends GameModel {
     @Override
     public void gameUpdate(int lastKey) throws GameOverException {
         updateDirection(lastKey);
-
+        checkWin();
         // Move the snake forward
         moveSnake();
 
+        // Remove the coin at the new collector position (if any)
+        if (this.cherries.remove(this.snakeHeadPos)) {
+            this.score++;
+            addCherry();
+        }
+        else { // Remove the last piece of the body if no cherry was found
+            if (deque.peekLast().getX() != -1 ) {
+                setGameboardState(deque.peekLast(), blankTile);
+            }
+            deque.removeLast();
+        }
+/*
         // Check if the cherry is at the snake
         if (snakeHeadPos.equals(cherryPos)) {
             moveCherry(); // Make a new cherry
             score++;
         }
         else { // Remove the last piece of the body if no cherry was found
-            setGameboardState(deque.peekLast(), blankTile);
+            if (deque.peekLast().getX() != -1 ) {
+                setGameboardState(deque.peekLast(), blankTile);
+            }
             deque.removeLast();
         }
+  */
     }
 }
