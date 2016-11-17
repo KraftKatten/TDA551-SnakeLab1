@@ -32,7 +32,7 @@ public class SnakeModel extends GameModel {
             return this.yDelta;
         }
     }
-    private static final int CHERRY_Start_Amount = 3;
+    private static final int CHERRY_Start_Amount = 1;
     private static final int SNAKE_START_LENGTH = 6;
 
 
@@ -167,15 +167,18 @@ public class SnakeModel extends GameModel {
 
         snakeHeadPos = getNextSnakePos();
 
-        checkCollision();
-        outOfBounds();
 
+        if (snakeHeadPos.getX() < 0 || snakeHeadPos.getY() < 0||getGameboardState(snakeHeadPos).equals(bodyTile)){
+            throw new GameOverException(score);
+        }
+         outOfBounds();
+        checkCollision();
         setGameboardState(snakeHeadPos, headTile);
 
     }
 
-    private void outOfBounds() throws GameOverException {
-        if(snakeHeadPos.getX() >= getGameboardSize().width || snakeHeadPos.getY() >= getGameboardSize().height || snakeHeadPos.getX() < 0 || snakeHeadPos.getY() < 0 ){
+    private void  outOfBounds() throws GameOverException {
+        if(snakeHeadPos.getX() >= getGameboardSize().width || snakeHeadPos.getY() >= getGameboardSize().height  ){
             throw new GameOverException(score);
         }
     }
@@ -239,7 +242,7 @@ public class SnakeModel extends GameModel {
     */
 
         /**
-         * Insert another coin into the gameboard.
+         * Insert another cherry into the gameboard.
          */
     private void addCherry() throws GameOverException {
         Position newCherryPos;
@@ -251,7 +254,7 @@ public class SnakeModel extends GameModel {
                     (int) (Math.random() * size.height));
         } while (!isPositionEmpty(newCherryPos));
 
-        // ... add a new coin to the empty tile.
+        // ... add a new cherry to the empty tile.
         setGameboardState(newCherryPos, CHERRY_TILE);
         this.cherries.add(newCherryPos);
     }
@@ -276,8 +279,10 @@ public class SnakeModel extends GameModel {
     public void gameUpdate(int lastKey) throws GameOverException {
         updateDirection(lastKey);
         checkWin();
+
         // Move the snake forward
         moveSnake();
+
 
         // Remove the coin at the new collector position (if any)
         if (this.cherries.remove(this.snakeHeadPos)) {
